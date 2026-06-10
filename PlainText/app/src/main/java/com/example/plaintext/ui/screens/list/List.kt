@@ -45,8 +45,64 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.plaintext.data.model.PasswordInfo
 
 @Composable
+fun ListScreen(
+    state: ListViewState,
+    navigateToAdd: () -> Unit,
+    navigateToEdit: (PasswordInfo) -> Unit,
+    navigateToSettings: () -> Unit
+) {
+    Scaffold(
+        topBar = {
+            TopBarComponent(
+                navigateToSettings = navigateToSettings,
+                navigateToSensores = {}
+            )
+        },
+        floatingActionButton = {
+            AddButton(onClick = navigateToAdd)
+        }
+    ) { paddingValues ->
+        ListItemContent(
+            modifier = Modifier.padding(paddingValues),
+            listState = state,
+            navigateToEdit = navigateToEdit
+        )
+    }
+}
+
+@Composable
 fun ListView(
-) {}
+    viewModel: ListViewModel = hiltViewModel(),
+    navigateToAdd: () -> Unit,
+    navigateToEdit: (PasswordInfo) -> Unit,
+    navigateToSettings: () -> Unit
+) {
+    ListScreen(
+        state = viewModel.listViewState,
+        navigateToAdd = navigateToAdd,
+        navigateToEdit = navigateToEdit,
+        navigateToSettings = navigateToSettings
+    )
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun ListScreenPreview() {
+    val mockState = ListViewState(
+        passwordList = listOf(
+            PasswordInfo(1, "Twitter", "dev", "123", "notes"),
+            PasswordInfo(2, "Facebook", "devtitans", "456", "notes"),
+            PasswordInfo(3, "Moodle", "dev.com", "789", "notes")
+        ),
+        isCollected = true
+    )
+    ListScreen(
+        state = mockState,
+        navigateToAdd = {},
+        navigateToEdit = {},
+        navigateToSettings = {}
+    )
+}
 
 @Composable
 fun AddButton(onClick: () -> Unit) {
