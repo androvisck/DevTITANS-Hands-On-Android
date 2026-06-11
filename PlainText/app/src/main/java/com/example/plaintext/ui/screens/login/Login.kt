@@ -43,18 +43,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.plaintext.ui.viewmodel.PreferencesState
 import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 
-/**
- * Função composable que representa a tela de Login da aplicação.
- * Utiliza o Hilt para obter o ViewModel.
- */
 @Composable
 fun Login_screen(
     navigateToSettings: () -> Unit,
     navigateToList: () -> Unit,
     viewModel: PreferencesViewModel = hiltViewModel()
 ) {
-    // Elevamos o estado do ViewModel para uma função "Stateless" (pura)
-    // para permitir que o Preview funcione corretamente.
     LoginContent(
         state = viewModel.preferencesState,
         onUpdatePreencher = { viewModel.updatePreencher(it) },
@@ -64,10 +58,7 @@ fun Login_screen(
     )
 }
 
-/**
- * Conteúdo real da tela de Login (Stateless).
- * Não depende do Hilt ou de instâncias reais de ViewModel, facilitando o Preview.
- */
+
 @Composable
 private fun LoginContent(
     state: PreferencesState,
@@ -143,11 +134,15 @@ private fun LoginContent(
 
             Button(
                 onClick = {
-                    if (checkCredentials(username, password)) {
-                        navigateToList()
+                    if (username.length > 0 && password.length > 0) {
+                        if (checkCredentials(username, password)) {
+                            navigateToList()
+                        } else {
+                            Toast.makeText(context, "Login/Senha invalidos", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
-                        Toast.makeText(context, "Credenciais inválidas", Toast.LENGTH_SHORT).show()
-                    }
+                Toast.makeText(context, "Preencha todos os campos!", Toast.LENGTH_SHORT).show()
+            }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -160,8 +155,6 @@ private fun LoginContent(
 @Preview(showBackground = true)
 @Composable
 fun Login_screenPreview() {
-    // O segredo está aqui: chamamos o LoginContent com dados mockados.
-    // Isso evita o erro do hiltViewModel() no Preview.
     LoginContent(
         state = PreferencesState(login = "", password = "", preencher = true),
         onUpdatePreencher = {},
