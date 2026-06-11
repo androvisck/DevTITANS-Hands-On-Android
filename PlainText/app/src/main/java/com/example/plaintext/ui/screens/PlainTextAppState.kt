@@ -70,6 +70,11 @@ class JetcasterAppState(
         navController.navigate(Screen.Login)
     }
 
+    fun navigateToPreferences() {
+        navController.navigate(Screen.Preferences) {
+            launchSingleTop = true // Evita abrir múltiplas instâncias da mesma tela na pilha
+        }
+    }
 }
 
 /**

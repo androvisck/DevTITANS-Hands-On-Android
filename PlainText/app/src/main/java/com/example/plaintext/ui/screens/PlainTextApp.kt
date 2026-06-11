@@ -22,7 +22,7 @@ import com.example.plaintext.ui.viewmodel.ListViewModel
 import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 import com.example.plaintext.utils.parcelableType
 import kotlin.reflect.typeOf
-
+import com.example.plaintext.ui.screens.preferences.SettingsScreen
 @Composable
 fun PlainTextApp(
     appState: JetcasterAppState = rememberJetcasterAppState()
@@ -38,7 +38,8 @@ fun PlainTextApp(
         }
         composable<Screen.Login>{
             Login_screen(
-                navigateToSettings = {},
+                navigateToSettings = {
+                    appState.navigateToPreferences()},
                 navigateToList = {}
             )
         }
@@ -51,6 +52,9 @@ fun PlainTextApp(
                 navigateBack = {},
                 savePassword = { password -> Unit }
             )
+        }
+        composable<Screen.Preferences> {
+            SettingsScreen(navController = appState.navController)
         }
     }
 }
