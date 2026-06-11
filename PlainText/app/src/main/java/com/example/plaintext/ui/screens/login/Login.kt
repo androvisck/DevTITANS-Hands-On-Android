@@ -55,6 +55,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.plaintext.R
 import com.example.plaintext.ui.viewmodel.PreferencesViewModel
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
+val MarromFundo = Color(0xFF1A0F07)
+val VerdeBanner = Color(0xFF8BC34A)
+val BotaoSalmao = Color(0xFFFFB591)
+val BordaInput = Color(0xFFFFCCAA)
 
 data class LoginState(
     val preencher: Boolean,
@@ -70,7 +81,163 @@ fun Login_screen(
     navigateToList: () -> Unit,
     viewModel: PreferencesViewModel = hiltViewModel()
 ) {
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var lembrarUsuario by rememberSaveable { mutableStateOf(false) }
 
+    val context = LocalContext.current
+
+    Scaffold(
+        topBar = {
+            TopBarComponent(
+                navigateToSettings = navigateToSettings,
+                navigateToSensores = {}
+            )
+        }
+    ) { paddingValues ->
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MarromFundo)
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(VerdeBanner)
+                    .padding(horizontal = 32.dp, vertical = 24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = android.R.drawable.ic_menu_report_image), // Substitua pelo ic_android se disponível
+                    contentDescription = "Android Logo",
+                    modifier = Modifier.height(64.dp).width(64.dp),
+                    tint = Color.White
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
+                    Text(
+                        text = "\"The most secure password manager\"",
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
+                    Text(
+                        text = "Bob and Alice",
+                        color = Color.White,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Text(
+                text = "Digite suas credenciais para continuar",
+                color = Color.White,
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Login:",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    modifier = Modifier.width(70.dp)
+                )
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = BordaInput,
+                        unfocusedBorderColor = Color.Gray,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Senha:",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    modifier = Modifier.width(70.dp)
+                )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = BordaInput,
+                        unfocusedBorderColor = Color.Gray,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // 5. CHECKBOX "Salvar as informações de login"
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 48.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Checkbox(
+                    checked = lembrarUsuario,
+                    onCheckedChange = { lembrarUsuario = it },
+                    colors = CheckboxDefaults.colors(uncheckedColor = Color.White)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Salvar as informações de login", color = Color.White, fontSize = 15.sp)
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Button(
+                onClick = {
+                    if (email.isNotEmpty() && password.isNotEmpty()) {
+                        navigateToList()
+                    } else {
+                        Toast.makeText(context, "Preencha todos os campos!", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier
+                    .width(160.dp)
+                    .height(48.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = BotaoSalmao)
+            ) {
+                Text("Enviar", color = MarromFundo, fontSize = 16.sp)
+            }
+        }
+    }
 }
 
 @Composable
@@ -108,7 +275,11 @@ fun TopBarComponent(
     }
 
     TopAppBar(
-        title = { Text("PlainText") },
+        title = { Text("PlainText", color = Color.White) },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MarromFundo,
+            actionIconContentColor = Color.White
+        ),
         actions = {
             if (navigateToSettings != null && navigateToSensores != null) {
                 IconButton(onClick = { expanded = true }) {
@@ -121,18 +292,16 @@ fun TopBarComponent(
                     DropdownMenuItem(
                         text = { Text("Configurações") },
                         onClick = {
-                            navigateToSettings();
-                            expanded = false;
+                            navigateToSettings()
+                            expanded = false
                         },
                         modifier = Modifier.padding(8.dp)
                     )
                     DropdownMenuItem(
-                        text = {
-                            Text("Sobre");
-                        },
+                        text = { Text("Sobre") },
                         onClick = {
-                            shouldShowDialog.value = true;
-                            expanded = false;
+                            shouldShowDialog.value = true
+                            expanded = false
                         },
                         modifier = Modifier.padding(8.dp)
                     )
@@ -140,4 +309,125 @@ fun TopBarComponent(
             }
         }
     )
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun LoginScreenPreview() {
+    MaterialTheme {
+        Scaffold(
+            topBar = {
+                TopBarComponent(
+                    navigateToSettings = {},
+                    navigateToSensores = {}
+                )
+            }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MarromFundo)
+                    .padding(paddingValues),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // 1. BANNER VERDE
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(VerdeBanner)
+                        .padding(horizontal = 32.dp, vertical = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = android.R.drawable.ic_menu_report_image), // Usa o ícone nativo do sistema
+                        contentDescription = "Android Logo",
+                        modifier = Modifier.height(64.dp).width(64.dp),
+                        tint = Color.White
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
+                        Text(text = "\"The most secure password manager\"", color = Color.White, fontSize = 16.sp)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+                // 2. TEXTO DE ORIENTAÇÃO
+                Text(
+                    text = "Digite suas credenciais para continuar",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+
+                // 3. CAMPO LOGIN
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Login:", color = Color.White, fontSize = 18.sp, modifier = Modifier.width(70.dp))
+                    OutlinedTextField(
+                        value = "",
+                        onValueChange = {},
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = BordaInput,
+                            unfocusedBorderColor = Color.Gray
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 4. CAMPO SENHA
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Senha:", color = Color.White, fontSize = 18.sp, modifier = Modifier.width(70.dp))
+                    OutlinedTextField(
+                        value = "",
+                        onValueChange = {},
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = BordaInput,
+                            unfocusedBorderColor = Color.Gray
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // 5. CHECKBOX
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 48.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = true,
+                        onCheckedChange = {},
+                        colors = CheckboxDefaults.colors(uncheckedColor = Color.White)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Salvar as informações de login", color = Color.White, fontSize = 15.sp)
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // 6. BOTÃO ENVIAR
+                Button(
+                    onClick = {},
+                    modifier = Modifier.width(160.dp).height(48.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = BotaoSalmao)
+                ) {
+                    Text("Enviar", color = MarromFundo, fontSize = 16.sp)
+                }
+            }
+        }
+    }
 }

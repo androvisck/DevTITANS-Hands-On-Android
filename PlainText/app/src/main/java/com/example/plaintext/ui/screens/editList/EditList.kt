@@ -42,7 +42,12 @@ data class EditListState(
 )
 
 fun isPasswordEmpty(password: PasswordInfo): Boolean {
-    return password.name.isEmpty() && password.login.isEmpty() && password.password.isEmpty() && password.notes.isEmpty()
+    // Como 'notes' é opcional (String? = null) segundo a Atividade 6,
+    // precisamos usar o ?. e o ?: true para o Kotlin não travar a compilação.
+    return password.name.isEmpty() &&
+            password.login.isEmpty() &&
+            password.password.isEmpty() &&
+            (password.notes?.isEmpty() ?: true)
 }
 
 @Composable
