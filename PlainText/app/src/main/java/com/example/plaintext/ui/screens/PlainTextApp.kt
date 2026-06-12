@@ -35,6 +35,8 @@ fun PlainTextApp(
     // NavHost - container que gerencia as telas e a navegação
     // navController - controlador de navegação do appState
     // startDestination - tela inicial do app (Screen.Login)
+    val preferencesViewModel: PreferencesViewModel = hiltViewModel()
+
     NavHost(
         navController = appState.navController,
         startDestination = Screen.Login,
@@ -51,7 +53,8 @@ fun PlainTextApp(
         // appState - passado para permitir navegação para outras telas
         composable<Screen.Login>{
             Login_screen(
-                appState = appState
+                appState = appState,
+                viewModel = preferencesViewModel
             )
         }
         // Screen.EditList - tela de edição de senha
@@ -68,7 +71,10 @@ fun PlainTextApp(
         }
         // Screen.Preferences - tela de configurações
         composable<Screen.Preferences> {
-            SettingsScreen(navController = appState.navController)
+            SettingsScreen(
+                navController = appState.navController,
+                viewModel = preferencesViewModel
+            )
         }
         // Screen.List - tela de lista de senhas
         // hiltViewModel() - injeta o ViewModel automaticamente
