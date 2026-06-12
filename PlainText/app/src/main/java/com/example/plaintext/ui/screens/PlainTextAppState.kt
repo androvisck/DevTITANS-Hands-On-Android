@@ -51,7 +51,7 @@ fun rememberJetcasterAppState(
 }
 
 
-class JetcasterAppState(
+open class JetcasterAppState(
     val navController: NavHostController,
     private val context: Context
 ) {
@@ -70,6 +70,21 @@ class JetcasterAppState(
         navController.navigate(Screen.Login)
     }
 
+    fun navigateToPreferences() {
+        navController.navigate(Screen.Preferences) {
+            launchSingleTop = true // Evita abrir múltiplas instâncias da mesma tela na pilha
+        }
+    }
+
+    fun navigateToList() {
+        navController.navigate(Screen.List) {
+            launchSingleTop = true
+        }
+    }
+
+    fun navigateToEditList(password: PasswordInfo) {
+        navController.navigate(Screen.EditList(password))
+    }
 }
 
 /**

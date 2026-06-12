@@ -22,26 +22,40 @@ import com.example.plaintext.ui.viewmodel.ListViewModel
 import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 import com.example.plaintext.utils.parcelableType
 import kotlin.reflect.typeOf
-
+import com.example.plaintext.ui.screens.preferences.SettingsScreen
+/**
+ * Função principal do app que define a navegação entre telas
+ * @param appState - Gerenciador de navegação, criado automaticamente se não for fornecido
+ *                   rememberJetcasterAppState() mantém o estado durante recomposições
+ */
 @Composable
 fun PlainTextApp(
     appState: JetcasterAppState = rememberJetcasterAppState()
 ) {
+    // NavHost - container que gerencia as telas e a navegação
+    // navController - controlador de navegação do appState
+    // startDestination - tela inicial do app (Screen.Login)
     NavHost(
         navController = appState.navController,
-        startDestination = Screen.Hello("DevTITANS"),
+        startDestination = Screen.Login,
     )
     {
+        // composable - define cada tela da navegação
+        // Screen.Hello - tela de boas-vindas
+        // toRoute - converte a rota atual em objeto tipado
         composable<Screen.Hello>{
             var args = it.toRoute<Screen.Hello>()
             Hello_screen(args)
         }
+        // Screen.Login - tela de login
+        // appState - passado para permitir navegação para outras telas
         composable<Screen.Login>{
             Login_screen(
-                navigateToSettings = {},
-                navigateToList = {}
+                appState = appState
             )
         }
+        // Screen.EditList - tela de edição de senha
+        // typeMap - mapeamento necessário para passar objetos complexos na navegação
         composable<Screen.EditList>(
             typeMap = mapOf(typeOf<PasswordInfo>() to parcelableType<PasswordInfo>())
         ) {
@@ -50,6 +64,21 @@ fun PlainTextApp(
                 args,
                 navigateBack = {},
                 savePassword = { password -> Unit }
+            )
+        }
+        // Screen.Preferences - tela de configurações
+        composable<Screen.Preferences> {
+            SettingsScreen(navController = appState.navController)
+        }
+        // Screen.List - tela de lista de senhas
+        // hiltViewModel() - injeta o ViewModel automaticamente
+        // ListView - componente que exibe a lista
+        composable<Screen.List> {
+            val listViewModel: ListViewModel = hiltViewModel()
+            ListView(
+                listViewState = listViewModel.listViewState,
+                navigateToEditList = { password -> appState.navigateToEditList(password) },
+                savePassword = { password -> listViewModel.savePassword(password) }
             )
         }
     }

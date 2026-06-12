@@ -40,6 +40,9 @@ fun SettingsScreen(navController: NavHostController?,
 
 @Composable
 fun SettingsContent(modifier: Modifier = Modifier, viewModel: PreferencesViewModel) {
+
+    val state = viewModel.preferencesState
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -49,41 +52,81 @@ fun SettingsContent(modifier: Modifier = Modifier, viewModel: PreferencesViewMod
         PreferenceInput(
             title = "Preencher Login",
             label = "Login",
-            fieldValue = "",
+            fieldValue = state.login,
             summary = "Preencher login na tela inicial"
-        ){
-            // função para alterar o login
+        ){ novoLogin ->
+            viewModel.updateLogin(novoLogin)
         }
 
         PreferenceInput(
             title = "Setar Senha",
             label = "Label",
-            fieldValue = "",
+            fieldValue = state.password,
             summary = "Senha para entrar no sistema"
-        ){
-            // função para alterar a senha
+        ){ novaSenha ->
+            viewModel.updatePassword(novaSenha)
         }
 
         PreferenceItem(
             title = "Preencher Login",
             summary = "Preencher login na tela inicial",
             onClick = {
-                // deve alterar o estado que representa se o switch está ligado ou não
+                viewModel.updatePreencher(!state.preencher)
             },
             control = {
                 Switch(
-                    checked = false, // deve ler o estado que representa se o switch está ligado ou não
-                    onCheckedChange = {
-                        // deve alterar o estado que representa se o switch está ligado ou não
+                    checked = state.preencher,
+                    onCheckedChange = { ligado ->
+                        viewModel.updatePreencher(ligado)
                     }
                 )
             }
         )
     }
 }
+@Composable
+fun SettingsContentPreviewMode(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())){
 
-@Preview(showBackground = true)
+        PreferenceInput(
+            title = "Preencher Login",
+            label = "Login",
+            fieldValue = "devtitans",
+            summary = "Preencher login na tela inicial"
+        ){}
+
+        PreferenceInput(
+            title = "Setar Senha",
+            label = "Label",
+            fieldValue = "123",
+            summary = "Senha para entrar no sistema"
+        ){}
+
+        PreferenceItem(
+            title = "Preencher Login",
+            summary = "Preencher login na tela inicial",
+            onClick = {},
+            control = {
+                Switch(
+                    checked = true,
+                    onCheckedChange = {}
+                )
+            }
+        )
+    }
+}
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun SettingsScreenPreview() {
-    SettingsScreen(null)
+    Scaffold(
+        topBar = {
+            TopBarComponent()
+        }
+    ){ padding ->
+        SettingsContentPreviewMode(modifier = Modifier.padding(padding))
+    }
 }
