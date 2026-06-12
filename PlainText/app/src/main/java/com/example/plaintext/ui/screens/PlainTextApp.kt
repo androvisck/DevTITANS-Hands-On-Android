@@ -73,12 +73,20 @@ fun PlainTextApp(
         // Screen.List - tela de lista de senhas
         // hiltViewModel() - injeta o ViewModel automaticamente
         // ListView - componente que exibe a lista
+
         composable<Screen.List> {
             val listViewModel: ListViewModel = hiltViewModel()
             ListView(
-                listViewState = listViewModel.listViewState,
-                navigateToEditList = { password -> appState.navigateToEditList(password) },
-                savePassword = { password -> listViewModel.savePassword(password) }
+                viewModel = listViewModel,
+                navigateToAdd = {
+                    appState.navController.navigate(Screen.EditList(PasswordInfo(0, "", "", "")))
+                },
+                navigateToEdit = { password ->
+                    appState.navController.navigate(Screen.EditList(password))
+                },
+                navigateToSettings = {
+                    appState.navigateToPreferences()
+                }
             )
         }
     }
