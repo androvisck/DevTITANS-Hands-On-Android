@@ -75,6 +75,16 @@ class JetcasterAppState(
             launchSingleTop = true // Evita abrir múltiplas instâncias da mesma tela na pilha
         }
     }
+
+    fun navigateToList() {
+        navController.navigate(Screen.List) {
+            launchSingleTop = true
+        }
+    }
+
+    fun navigateToEditList(password: PasswordInfo) {
+        navController.navigate(Screen.EditList(password))
+    }
 }
 
 /**

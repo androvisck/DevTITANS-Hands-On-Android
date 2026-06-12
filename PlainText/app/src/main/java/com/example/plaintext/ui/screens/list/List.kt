@@ -46,7 +46,29 @@ import com.example.plaintext.data.model.PasswordInfo
 
 @Composable
 fun ListView(
-) {}
+    listViewState: ListViewState,
+    navigateToEditList: (password: PasswordInfo) -> Unit,
+    savePassword: (password: PasswordInfo) -> Unit
+) {
+    Scaffold(
+        floatingActionButton = {
+            AddButton(onClick = { navigateToEditList(PasswordInfo()) })
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            TopBarComponent(title = "Senhas")
+            ListItemContent(
+                modifier = Modifier,
+                listState = listViewState,
+                navigateToEdit = navigateToEditList
+            )
+        }
+    }
+}
 
 @Composable
 fun AddButton(onClick: () -> Unit) {
