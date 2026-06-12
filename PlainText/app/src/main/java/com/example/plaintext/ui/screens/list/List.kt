@@ -52,7 +52,7 @@ fun ListView(
 ) {
     Scaffold(
         floatingActionButton = {
-            AddButton(onClick = { navigateToEditList(PasswordInfo()) })
+            AddButton(onClick = { navigateToEditList(PasswordInfo(name = "", login = "", password = "")) })
         }
     ) { paddingValues ->
         Column(
@@ -60,7 +60,7 @@ fun ListView(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            TopBarComponent(title = "Senhas")
+            TopBarComponent()
             ListItemContent(
                 modifier = Modifier,
                 listState = listViewState,

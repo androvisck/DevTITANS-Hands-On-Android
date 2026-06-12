@@ -73,6 +73,7 @@ fun Login_screen(
  * @param navigateToSettings - Função lambda para navegar para tela de configurações
  * @param navigateToList - Função lambda para navegar para tela de lista
  */
+ 
 @Composable
 private fun LoginContent(
     state: PreferencesState,
@@ -192,10 +193,12 @@ private fun LoginContent(
 @Preview(showBackground = true)
 @Composable
 fun Login_screenPreview() {
+    val navController = androidx.navigation.compose.rememberNavController()
+    val context = androidx.compose.ui.platform.LocalContext.current
     val mockAppState = remember {
         object : JetcasterAppState(
-            navController = androidx.navigation.compose.rememberNavController(),
-            context = androidx.compose.ui.platform.LocalContext.current
+            navController = navController,
+            context = context
         ) {}
     }
     Login_screen(

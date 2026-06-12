@@ -51,7 +51,7 @@ fun rememberJetcasterAppState(
 }
 
 
-class JetcasterAppState(
+open class JetcasterAppState(
     val navController: NavHostController,
     private val context: Context
 ) {
