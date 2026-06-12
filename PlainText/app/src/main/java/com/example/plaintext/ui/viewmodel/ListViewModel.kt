@@ -40,7 +40,9 @@ open class ListViewModel @Inject constructor(
         }
     }
 
-    fun savePassword(password: PasswordInfo){
-
+    fun savePassword(password: PasswordInfo) {
+        viewModelScope.launch {
+            passwordDBStore.save(password)
+        }
     }
 }
