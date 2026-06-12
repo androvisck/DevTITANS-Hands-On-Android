@@ -52,7 +52,7 @@ fun SettingsContent(modifier: Modifier = Modifier, viewModel: PreferencesViewMod
         PreferenceInput(
             title = "Preencher Login",
             label = "Login",
-            fieldValue = "",
+            fieldValue = state.login,
             summary = "Preencher login na tela inicial"
         ){ novoLogin ->
             viewModel.updateLogin(novoLogin)
@@ -61,10 +61,10 @@ fun SettingsContent(modifier: Modifier = Modifier, viewModel: PreferencesViewMod
         PreferenceInput(
             title = "Setar Senha",
             label = "Label",
-            fieldValue = "",
+            fieldValue = state.password,
             summary = "Senha para entrar no sistema"
         ){ novaSenha ->
-            viewModel.updatePassword(novaSenha)            // função para alterar a senha
+            viewModel.updatePassword(novaSenha)
         }
 
         PreferenceItem(
@@ -75,7 +75,7 @@ fun SettingsContent(modifier: Modifier = Modifier, viewModel: PreferencesViewMod
             },
             control = {
                 Switch(
-                    checked = state.preencher, // deve ler o estado que representa se o switch está ligado ou não
+                    checked = state.preencher,
                     onCheckedChange = { ligado ->
                         viewModel.updatePreencher(ligado)
                     }
