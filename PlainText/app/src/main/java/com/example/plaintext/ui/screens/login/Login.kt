@@ -40,25 +40,39 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.plaintext.ui.screens.JetcasterAppState
 import com.example.plaintext.ui.viewmodel.PreferencesState
 import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 
+/**
+ * Tela de Login - Composable principal
+ * @param appState - Objeto que gerencia a navegação entre telas do app
+ * @param viewModel - ViewModel que contém a lógica de negócio e estado da tela
+ *                   hiltViewModel() injeta automaticamente o ViewModel usando Hilt
+ */
 @Composable
 fun Login_screen(
-    navigateToSettings: () -> Unit,
-    navigateToList: () -> Unit,
+    appState: JetcasterAppState,
     viewModel: PreferencesViewModel = hiltViewModel()
 ) {
     LoginContent(
         state = viewModel.preferencesState,
         onUpdatePreencher = { viewModel.updatePreencher(it) },
         checkCredentials = { u, p -> viewModel.checkCredentials(u, p) },
-        navigateToSettings = navigateToSettings,
-        navigateToList = navigateToList
+        navigateToSettings = { appState.navigateToPreferences() },
+        navigateToList = { appState.navigateToList() }
     )
 }
 
 
+/**
+ * Conteúdo da tela de Login - Função privada que implementa o layout
+ * @param state - Estado atual das preferências (login, senha, preencher)
+ * @param onUpdatePreencher - Função lambda chamada quando o checkbox é alterado
+ * @param checkCredentials - Função lambda que valida usuário e senha
+ * @param navigateToSettings - Função lambda para navegar para tela de configurações
+ * @param navigateToList - Função lambda para navegar para tela de lista
+ */
 @Composable
 private fun LoginContent(
     state: PreferencesState,
@@ -70,9 +84,14 @@ private fun LoginContent(
     val context = LocalContext.current
 
     // Estados locais para os campos de entrada
+    // rememberSaveable mantém o estado mesmo durante rotação da tela
+    // mutableStateOf cria um estado observável que atualiza a UI quando muda
     var username by rememberSaveable { mutableStateOf(if (state.preencher) state.login else "") }
     var password by rememberSaveable { mutableStateOf(if (state.preencher) state.password else "") }
 
+    // Scaffold é o layout principal que fornece estrutura básica da tela
+    // topBar - barra superior com menu
+    // paddingValues - espaçamento interno automático do sistema
     Scaffold(
         topBar = {
             TopBarComponent(
@@ -81,6 +100,11 @@ private fun LoginContent(
             )
         }
     ) { paddingValues ->
+        // Column organiza os elementos verticalmente
+        // Modifier - usado para modificar o comportamento/aparência do componente
+        // fillMaxSize() - ocupa toda a tela disponível
+        // padding() - adiciona espaçamento
+        // verticalScroll() - permite rolagem quando conteúdo excede a tela
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -96,8 +120,13 @@ private fun LoginContent(
                 color = MaterialTheme.colorScheme.primary
             )
 
+            // Spacer adiciona espaço vazio entre elementos
             Spacer(modifier = Modifier.height(32.dp))
 
+            // OutlinedTextField - campo de texto com borda
+            // value - valor atual do campo
+            // onValueChange - função chamada quando o texto muda (it = novo texto)
+            // label - texto de rótulo do campo
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
@@ -108,6 +137,7 @@ private fun LoginContent(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // PasswordVisualTransformation() - esconde os caracteres da senha
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -119,6 +149,7 @@ private fun LoginContent(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Row organiza os elementos horizontalmente
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -132,6 +163,7 @@ private fun LoginContent(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // onClick - função executada quando o botão é pressionado
             Button(
                 onClick = {
                     if (username.length > 0 && password.length > 0) {
@@ -152,15 +184,23 @@ private fun LoginContent(
     }
 }
 
+/**
+ * Preview da tela de Login - Permite visualizar a tela no Android Studio sem executar no emulador
+ * showBackground = true - mostra o fundo da tela
+ * mockAppState - cria um objeto falso de appState para o preview funcionar
+ */
 @Preview(showBackground = true)
 @Composable
 fun Login_screenPreview() {
-    LoginContent(
-        state = PreferencesState(login = "", password = "", preencher = true),
-        onUpdatePreencher = {},
-        checkCredentials = { _, _ -> true },
-        navigateToSettings = {},
-        navigateToList = {}
+    val mockAppState = remember {
+        object : JetcasterAppState(
+            navController = androidx.navigation.compose.rememberNavController(),
+            context = androidx.compose.ui.platform.LocalContext.current
+        ) {}
+    }
+    Login_screen(
+        appState = mockAppState,
+        viewModel = androidx.lifecycle.viewmodel.compose.viewModel()
     )
 }
 
