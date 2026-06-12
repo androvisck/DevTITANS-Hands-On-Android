@@ -56,5 +56,13 @@ fun PlainTextApp(
         composable<Screen.Preferences> {
             SettingsScreen(navController = appState.navController)
         }
+        composable<Screen.List> {
+            val listViewModel: ListViewModel = hiltViewModel()
+            ListView(
+                listViewState = listViewModel.listViewState,
+                navigateToEditList = { password -> appState.navigateToEditList(password) },
+                savePassword = { password -> listViewModel.savePassword(password) }
+            )
+        }
     }
 }
