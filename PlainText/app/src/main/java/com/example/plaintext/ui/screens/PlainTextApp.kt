@@ -63,10 +63,11 @@ fun PlainTextApp(
             typeMap = mapOf(typeOf<PasswordInfo>() to parcelableType<PasswordInfo>())
         ) {
             val args = it.toRoute<Screen.EditList>()
+            val viewModel: ListViewModel = hiltViewModel()
             EditList(
                 args,
-                navigateBack = {},
-                savePassword = { password -> Unit }
+                navigateBack = {appState.navController.popBackStack()},
+                savePassword = { password -> viewModel.savePassword(password) }
             )
         }
         // Screen.Preferences - tela de configurações
