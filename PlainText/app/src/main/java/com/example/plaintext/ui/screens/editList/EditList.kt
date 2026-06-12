@@ -12,12 +12,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -50,13 +56,115 @@ fun isPasswordEmpty(password: PasswordInfo): Boolean {
             (password.notes?.isEmpty() ?: true)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditList(
     args: Screen.EditList,
     navigateBack: () -> Unit,
-    savePassword: (password: PasswordInfo) -> Unit
+    savePassword: (PasswordInfo) -> Unit
 ) {
 
+    var nome by rememberSaveable {
+        mutableStateOf(args.password.name)
+    }
+
+    var usuario by rememberSaveable {
+        mutableStateOf(args.password.login)
+    }
+
+    var senha by rememberSaveable {
+        mutableStateOf(args.password.password)
+    }
+
+    var notas by rememberSaveable {
+        mutableStateOf(args.password.notes ?: "")
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        if (args.password.id == 0)
+                            "Nova Senha"
+                        else
+                            "Editar Senha"
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = navigateBack
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Voltar"
+                        )
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
+            OutlinedTextField(
+                value = nome,
+                onValueChange = { nome = it },
+                label = { Text("Nome") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = usuario,
+                onValueChange = { usuario = it },
+                label = { Text("Usuário") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = senha,
+                onValueChange = { senha = it },
+                label = { Text("Senha") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = notas,
+                onValueChange = { notas = it },
+                label = { Text("Notas") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                onClick = {
+                    savePassword(
+                        PasswordInfo(
+                            id = args.password.id,
+                            name = nome,
+                            login = usuario,
+                            password = senha,
+                            notes = notas
+                        )
+                    )
+
+                    navigateBack()
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Salvar")
+            }
+        }
+    }
 }
 
 
