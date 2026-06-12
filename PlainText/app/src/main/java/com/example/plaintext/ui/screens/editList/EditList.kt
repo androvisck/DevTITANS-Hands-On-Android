@@ -34,22 +34,6 @@ import com.example.plaintext.data.model.PasswordInfo
 import com.example.plaintext.ui.screens.Screen
 import com.example.plaintext.ui.screens.login.TopBarComponent
 
-data class EditListState(
-    val nomeState: MutableState<String>,
-    val usuarioState: MutableState<String>,
-    val senhaState: MutableState<String>,
-    val notasState: MutableState<String>,
-)
-
-fun isPasswordEmpty(password: PasswordInfo): Boolean {
-    // Como 'notes' é opcional (String? = null) segundo a Atividade 6,
-    // precisamos usar o ?. e o ?: true para o Kotlin não travar a compilação.
-    return password.name.isEmpty() &&
-            password.login.isEmpty() &&
-            password.password.isEmpty() &&
-            (password.notes?.isEmpty() ?: true)
-}
-
 @Composable
 fun EditList(
     args: Screen.EditList,
@@ -57,8 +41,68 @@ fun EditList(
     savePassword: (password: PasswordInfo) -> Unit
 ) {
 
-}
+    val nomeState = rememberSaveable {
+        mutableStateOf(args.password.name)
+    }
 
+    val usuarioState = rememberSaveable {
+        mutableStateOf(args.password.login)
+    }
+
+    val senhaState = rememberSaveable {
+        mutableStateOf(args.password.password)
+    }
+
+    val notasState = rememberSaveable {
+        mutableStateOf(args.password.notes ?: "")
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+
+        EditInput(
+            textInputLabel = "Nome",
+            textInputState = nomeState
+        )
+
+        EditInput(
+            textInputLabel = "Usuário",
+            textInputState = usuarioState
+        )
+
+        EditInput(
+            textInputLabel = "Senha",
+            textInputState = senhaState
+        )
+
+        EditInput(
+            textInputLabel = "Notas",
+            textInputState = notasState
+        )
+
+        Button(
+            onClick = {
+
+                savePassword(
+                    PasswordInfo(
+                        id = args.password.id,
+                        name = nomeState.value,
+                        login = usuarioState.value,
+                        password = senhaState.value,
+                        notes = notasState.value
+                    )
+                )
+
+                navigateBack()
+            }
+        ) {
+            Text("Salvar")
+        }
+    }
+}
 
 @Composable
 fun EditInput(
@@ -67,9 +111,7 @@ fun EditInput(
     textInputHeight: Int = 60
 ) {
     val padding: Int = 30
-
     var textState by rememberSaveable { textInputState }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -85,23 +127,5 @@ fun EditInput(
                 .height(textInputHeight.dp)
                 .fillMaxWidth()
         )
-
-    }
-    Spacer(modifier = Modifier.height(10.dp))
-}
-
-@Preview(showBackground = true)
-@Composable
-fun EditListPreview() {
-    EditList(
-        Screen.EditList(PasswordInfo(1, "Nome", "Usuário", "Senha", "Notas")),
-        navigateBack = {},
-        savePassword = {}
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun EditInputPreview() {
-    EditInput("Nome")
+    } Spacer (modifier = Modifier.height(10.dp))
 }
